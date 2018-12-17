@@ -57,7 +57,7 @@ const writeLog = ((cacheTo) => {
 
 const writeLog2 = ((cacheTo) => {
     touchSync(cacheTo);
-
+    console.log("cacheTo is : ",cacheTo)
     const rf = promisify(fs.readFile);
     const wf = promisify(fs.writeFile);
 
