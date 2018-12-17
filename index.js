@@ -67,7 +67,9 @@ const writeLog2 = ((cacheTo) => {
         flags: 'a'
     }) }
 
-    writeLast2(msg)
+    return (msg) => {
+        return writeLast2(msg);
+    }
 
 /*    return (msg) => {
         let last = null;
