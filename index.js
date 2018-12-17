@@ -93,10 +93,12 @@ app.get('/', (req, res) => {
     const msg = `${Date.now()},${req.params.whatever}`;
     console.log(msg);
     writeLog(msg).then((last)=>{
-        res.send('' + last + '\n' + msg + '\n');
-        writeLogChanged(msg).then((last)=>{
-            res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
-        })
+        res.send('' + last + '\n' + msg + '\n')
+        .then(() => {
+            writeLogChanged(msg).then((last)=>{
+                res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
+            })
+        });
     })
 
 });
