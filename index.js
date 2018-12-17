@@ -93,11 +93,11 @@ app.get('/', (req, res) => {
     console.log(msg);
     writeLog(msg).then((last)=>{
         res.send('' + last + '\n' + msg + '\n');
-    }).then(()=>{
         writeLog2(msg).then((last)=>{
             res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
         })
     })
+
 });
 
 app.listen(PORT, HOST);
