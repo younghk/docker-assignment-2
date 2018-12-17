@@ -58,6 +58,7 @@ const writeLog = ((cacheTo) => {
 const writeLog2 = ((cacheTo) => {
     touchSync(cacheTo);
     console.log("cacheTo is : ",cacheTo)
+    console.log("msg is : ",msg)
     const rf = promisify(fs.readFile);
     const wf = promisify(fs.writeFile);
 
@@ -66,7 +67,9 @@ const writeLog2 = ((cacheTo) => {
         flags: 'a'
     }) }
 
-    return (msg) => {
+    writeLast2(msg)
+
+/*    return (msg) => {
         let last = null;
         let release = null;
 
@@ -80,7 +83,7 @@ const writeLog2 = ((cacheTo) => {
             release();
             return last;
         })
-    }
+    }*/
 })( path.join(CACHE_PATH, LOG_CACHE_FILENAME) );
 
 const app = express();
