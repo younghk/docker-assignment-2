@@ -13,6 +13,8 @@ const HOST = '0.0.0.0';
 const CACHE_PATH =  process.argv[2] || '/data';
 const LAST_CACHE_FILENAME = '.last';
 
+const LOG_CACHE_FILENAME = '.loglast';
+
 function touchSync(path){
     if (fs.existsSync(path)) return;
     fs.closeSync(fs.openSync(path, 'w'));
@@ -59,7 +61,7 @@ const writeLog2 = ((cacheTo) => {
     const rf = promisify(fs.readFile);
     const wf = promisify(fs.writeFile);
 
-    function readLast() { return rf(cacheTo); }
+    function readLast2() { return rf(cacheTo); }
     function writeLast2(msg){ return wf(cacheTo, msg, {
         flags: 'a'
     }) }
@@ -70,7 +72,7 @@ const writeLog2 = ((cacheTo) => {
 
         return lockfile.lock(cacheTo).then((_release) => {
             release = _relesase;
-            return readLast();
+            return readLast2();
         }).then((lastMsg)=>{
             last = lastMsg;
             return writeLast2(msg);
@@ -91,11 +93,10 @@ app.get('/', (req, res) => {
     console.log(msg);
     writeLog(msg).then((last)=>{
         res.send('' + last + '\n' + msg + '\n');
-    }).then(() => {
-        writeLog2(msg).then((last)=>{
-            res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
-        })
-    });
+    })
+    writeLog2(msg).then((last)=>{
+         res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
+    })
 });
 
 app.listen(PORT, HOST);
