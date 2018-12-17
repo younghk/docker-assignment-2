@@ -1,0 +1,21 @@
+{
+  "name": "hello-docker",
+  "version": "1.0.0",
+  "description": "hello-docker",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "lesomnus",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.2",
+    "express": "^4.16.3",
+    "outdent": "^0.7.0",
+    "proper-lockfile": "^3.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KU-Cloud/hello-docker.git"
+  }
+}
