@@ -55,37 +55,33 @@ const writeLog = ((cacheTo) => {
     path.join(CACHE_PATH, LAST_CACHE_FILENAME)
 );
 
-const writeLog2 = ((cacheTo) => {
+const writeLogChanged = ((cacheTo) => {
     touchSync(cacheTo);
     console.log("cacheTo is : ",cacheTo)
     console.log("msg is : ",msg)
     const rf = promisify(fs.readFile);
     const wf = promisify(fs.writeFile);
 
-    function readLast2() { return rf(cacheTo); }
-    function writeLast2(msg){ return wf(cacheTo, msg, {
+    function readLastC() { return rf(cacheTo); }
+    function writeLastC(msg){ return wf(cacheTo, msg, {
         flags: 'a'
     }) }
 
     return (msg) => {
-        return writeLast2(msg);
-    }
-
-/*    return (msg) => {
         let last = null;
         let release = null;
 
         return lockfile.lock(cacheTo).then((_release) => {
             release = _release;
-            return readLast2();
+            return readLastC();
         }).then((lastMsg)=>{
             last = lastMsg;
-            return writeLast2(msg);
+            return writeLastC(msg);
         }).then(()=>{
             release();
             return last;
         })
-    }*/
+    }
 })( path.join(CACHE_PATH, LOG_CACHE_FILENAME) );
 
 const app = express();
@@ -98,7 +94,7 @@ app.get('/', (req, res) => {
     console.log(msg);
     writeLog(msg).then((last)=>{
         res.send('' + last + '\n' + msg + '\n');
-        writeLog2(msg).then((last)=>{
+        writeLogChanged(msg).then((last)=>{
             res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
         })
     })
