@@ -71,7 +71,7 @@ const writeLog2 = ((cacheTo) => {
         let release = null;
 
         return lockfile.lock(cacheTo).then((_release) => {
-            release = _relesase;
+            release = _release;
             return readLast2();
         }).then((lastMsg)=>{
             last = lastMsg;
@@ -93,9 +93,10 @@ app.get('/', (req, res) => {
     console.log(msg);
     writeLog(msg).then((last)=>{
         res.send('' + last + '\n' + msg + '\n');
-    })
-    writeLog2(msg).then((last)=>{
-         res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
+    }).then(()=>{
+        writeLog2(msg).then((last)=>{
+            res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
+        })
     })
 });
 
