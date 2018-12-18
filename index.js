@@ -21,7 +21,7 @@ function touchSync(path){
     fs.mkdirSync(logPath);
 })(CACHE_PATH)
 
-const writeLog = ((cacheTo) => {
+/*const writeLog = ((cacheTo) => {
     touchSync(cacheTo);
 
     const rf = promisify(fs.readFile);
@@ -49,15 +49,37 @@ const writeLog = ((cacheTo) => {
     }
 })(
     path.join(CACHE_PATH, LAST_CACHE_FILENAME)
-);
+);*/
 
 const app = express();
+
+const lastFilePath = path.join(CACHE_PATH,LAST_CACHE_FILENAME);
+const rf = promisify(fs.readFile);
+const wf = promisify(fs.writeFile);
+touchSync(lastFilePath);
+
+function readLastFile() { return rf(lastFilePath); }
+function writeLastFile(message) { return wf(lastFilePath, message, { flag: 'w' })}
+
 app.get('/:whatever', (req, res) => {
     const msg = `${Date.now()},${req.params.whatever}`;
     console.log(msg);
-    writeLog(msg).then((last)=>{
-        res.send('' + last + '\n' + msg + '\n');
-    })
+    
+    return (msg) => {
+        let last = null;
+        let release = null;
+
+        return lockfile.lock(lastFilePath).then((_release) => {
+            release = _release;
+            return readLastFile();
+        }).then((lastMsg) => {
+            last = lastMsg;
+            return writeLastFile(msg);
+        }).then(() => {
+            release();
+            return last;
+        })
+    }
 });
 
 app.listen(PORT, HOST);
