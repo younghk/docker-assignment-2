@@ -20,6 +20,11 @@ function touchSync(path){
     fs.closeSync(fs.openSync(path, 'w'));
 }
 
+function touchSync2(path){
+    if (fs.existsSync(path)) return;
+    fs.closeSync(fs.openSync(path, 'a'));
+}
+
 ((logPath)=>{
     if(fs.existsSync(logPath)) return;
     fs.mkdirSync(logPath);
@@ -56,9 +61,8 @@ const writeLog = ((cacheTo) => {
 );
 
 const writeLog2 = ((cacheTo) => {
-    touchSync(cacheTo);
+    touchSync2(cacheTo);
     console.log("cacheTo is : ",cacheTo)
-    console.log("msg is : ",msg)
     const rf = promisify(fs.readFile);
     const wf = promisify(fs.writeFile);
 
@@ -76,6 +80,7 @@ const writeLog2 = ((cacheTo) => {
             return readLast2();
         }).then((lastMsg)=>{
             last = lastMsg;
+            console.log("msg is :: ",msg);
             return writeLast2(msg);
         }).then(()=>{
             release();
@@ -95,7 +100,8 @@ app.get('/', (req, res) => {
     writeLog(msg).then((last)=>{
         res.send('' + last + '\n' + msg + '\n');
         writeLog2(msg).then((last)=>{
-            res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
+            console.log('doing...')
+//            res.send(''+last+'\n'+msg+' :: has been added into loglast\n');
         })
     })
 
