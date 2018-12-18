@@ -38,7 +38,7 @@ const writeLog = ((cacheTo) => {
 
     function readLast(){ return rf(cacheTo); }
     function writeLast(msg){ return wf(cacheTo, msg, {
-        flags: 'w'
+        flag: 'w'
     }); }
 
     return (msg) => {
@@ -68,7 +68,7 @@ const writeLog2 = ((cacheTo) => {
 
     function readLast2() { return rf(cacheTo); }
     function writeLast2(msg){ return wf(cacheTo, msg, {
-        flags: 'a'
+        flag: 'a'
     }) }
 
     return (msg) => {
@@ -81,7 +81,7 @@ const writeLog2 = ((cacheTo) => {
         }).then((lastMsg)=>{
             last = lastMsg;
             console.log("msg is :: ",msg);
-            return writeLast2(msg);
+            return writeLast2(msg+'\n');
         }).then(()=>{
             release();
             return last;
