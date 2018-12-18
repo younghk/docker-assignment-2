@@ -64,22 +64,20 @@ function writeLastFile(message) { return wf(lastFilePath, message, { flag: 'w' }
 app.get('/:whatever', (req, res) => {
     const msg = `${Date.now()},${req.params.whatever}`;
     console.log(msg);
-    
-    return (msg) => {
-        let last = null;
-        let release = null;
 
-        return lockfile.lock(lastFilePath).then((_release) => {
-            release = _release;
-            return readLastFile();
-        }).then((lastMsg) => {
-            last = lastMsg;
-            return writeLastFile(msg);
-        }).then(() => {
-            release();
-            return last;
-        })
-    }
+    let last = null;
+    let release = null;
+
+    return lockfile.lock(lastFilePath).then((_release) => {
+        release = _release;
+        return readLastFile();
+    }).then((lastMsg) => {
+        last = lastMsg;
+        return writeLastFile(msg);
+    }).then(() => {
+        release();
+        res.send(last);
+    })
 });
 
 app.listen(PORT, HOST);
