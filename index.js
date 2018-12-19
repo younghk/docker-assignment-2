@@ -9,27 +9,27 @@ const lockfile = require('proper-lockfile');
 const PORT = 8080;
 const HOST = '0.0.0.0';
 const CACHE_PATH =  process.argv[2] || '/data';
-const LAST_CACHE_FILENAME = '.last';
+const LAST_FILENAME = '.last';
 
-function touchSync(path){
+function matchSync(path){
     if (fs.existsSync(path)) return;
     fs.closeSync(fs.openSync(path, 'w'));
 }
 
-((logPath)=>{
-    if(fs.existsSync(logPath)) return;
-    fs.mkdirSync(logPath);
+((LOG_PATH)=>{
+    if(fs.existsSync(LOG_PATH)) return;
+    fs.mkdirSync(LOG_PATH);
 })(CACHE_PATH)
 
 const app = express();
 
-const lastFilePath = path.join(CACHE_PATH,LAST_CACHE_FILENAME);
-const rf = promisify(fs.readFile);
-const wf = promisify(fs.writeFile);
-touchSync(lastFilePath);
+const LAST_FILE_PATH = path.join(CACHE_PATH,LAST_FILENAME);
+const readfile = promisify(fs.readFile);
+const writefile = promisify(fs.writeFile);
+matchSync(LAST_FILE_PATH);
 
-function readLastFile() { return rf(lastFilePath); }
-function writeLastFile(message) { return wf(lastFilePath, message, { flag: 'w' })}
+function readLastFile() { return readfile(LAST_FILE_PATH); }
+function writeLastFile(message) { return writefile(LAST_FILE_PATH, message, { flag: 'w' })}
 
 app.get('/:string', (req, res) => {
     const msg = `${Date.now()},${req.params.string}`;
@@ -38,11 +38,11 @@ app.get('/:string', (req, res) => {
     let last = null;
     let release = null;
 
-    return lockfile.lock(lastFilePath).then((_release) => {
+    return lockfile.lock(LAST_FILE_PATH).then((_release) => {
         release = _release;
         return readLastFile();
-    }).then((lastMsg) => {
-        last = lastMsg;
+    }).then((lastMessage) => {
+        last = lastMessage;
         return writeLastFile(msg);
     }).then(() => {
         release();
@@ -51,4 +51,4 @@ app.get('/:string', (req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`);
+console.log("working...")
