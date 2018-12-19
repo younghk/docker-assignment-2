@@ -46,7 +46,7 @@ app.get('/:string', (req, res) => {
         return writeLastFile(msg);
     }).then(() => {
         release();
-        res.send(last);
+        res.send(last + " -> " + msg);
     })
 });
 
